@@ -1,0 +1,465 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+<script src="js/flexible_0.3.6.js"></script>
+<link href="css/weui.min.css" rel="stylesheet">
+<link href="css/jquery-weui-no-flexible.min.css" rel="stylesheet">
+<link href="css/photoswipe.css" rel="stylesheet">
+<link href="css/default-skin/default-skin.css" rel="stylesheet">
+<title>PhotoClip</title>
+<style>
+    *{
+        margin: 0;
+        padding: 0;
+    }
+    a{
+        text-decoration: none !important;
+    }
+    body {
+        margin: 0;
+        text-align: center;
+    }
+    #clipArea {
+        height: 400px;
+        margin-bottom: 20px;
+    }
+    #clipBtn {
+        margin: 20px;
+    }
+    #view {
+        margin: 0 auto 20px;
+        /*width: 100%;*/
+        max-width: 100%;
+        min-height: 400px;
+        max-height: 600px;
+        background-color: #666;
+    }
+    #cropResultImage{
+        margin: 0 auto;
+        /*width: 100%;*/
+        max-width: 100%;
+        min-height: 400px;
+        max-height: 600px;
+        background-color: #666;
+    }
+    .page{
+        display: none;
+    }
+    .page.page_crop{
+        display: block;
+    }
+    .page.page_crop_result{
+    }
+    .page.page_crop_result .cropResultContainer{
+        position: relative;
+    }
+    .swiper-container {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+    .swiper-container img {
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
+    .swiper-pagination-bullet{
+        margin-left: 3px;
+        margin-right: 3px;
+    }
+
+    .swiper-container-horizontal>.swiper-pagination-bullets, .swiper-pagination-custom, .swiper-pagination-fraction{
+        bottom: 1rem;
+    }
+    .photoFramePreview{
+        margin: 0.4rem auto;
+    }
+    .photoFrameConfirm{
+        margin: 0.3rem auto;
+    }
+    .photoFrameBtn{
+        display: block;
+    }
+    .myResultImage{
+        margin: 1rem auto;
+        width: 80%;
+    }
+
+    .likePageBtn{
+        display: block;
+        padding: 5px 10px;
+        margin: 0.5rem auto;
+    }
+
+</style>
+</head>
+<body ontouchstart="">
+<div class="app">
+    <div class="page page_crop">
+        <div id="clipArea"></div>
+        <button id="clipBtn" class="cropOptionBtn clipBtn">截取</button>
+        <button class="cropOptionBtn leftRotate" data-func="leftRotate">左旋转</button>
+        <button class="cropOptionBtn rightRotate" data-func="rightRotate">右旋转</button>
+        <input type="file" class="sr-only" id="inputImageFile" name="file" accept="image/*" hidden>
+        <button class="cropOptionBtn imageUpload" data-func="imageUpload">上传图片</button>
+    </div>
+    <div class="page page_crop_result">
+        <div class="cropResultContainer">
+        <!--<div id="view">-->
+            <img id="cropResultImage" src="">
+            <div class="swiper-container">
+                <!-- Additional required wrapper -->
+                <div class="swiper-wrapper">
+                    <!-- Slides -->
+                    <div class="swiper-slide"><img src="img/41.png" /></div>
+                    <div class="swiper-slide"><img src="img/49.png" /></div>
+                    <div class="swiper-slide"><img src="img/89.png" /></div>
+                </div>
+                <!-- If we need pagination -->
+                <div class="swiper-pagination"></div>
+            </div>
+        <!--</div>-->
+        </div>
+        <button class="photoFrameBtn photoFramePreview" data-func="photoFramePreview">预览一下</button>
+        <button class="photoFrameBtn photoFrameConfirm" data-func="photoFrameConfirm">确定并保存</button>
+        <!--<img class='compositePictures' src="">-->
+
+        <!-- Root element of PhotoSwipe. Must have class pswp. -->
+        <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+            <!-- Background of PhotoSwipe.
+                 It's a separate element, as animating opacity is faster than rgba(). -->
+            <div class="pswp__bg"></div>
+
+            <!-- Slides wrapper with overflow:hidden. -->
+            <div class="pswp__scroll-wrap">
+
+                <!-- Container that holds slides. PhotoSwipe keeps only 3 slides in DOM to save memory. -->
+                <div class="pswp__container">
+                    <!-- don't modify these 3 pswp__item elements, data is added later on -->
+                    <div class="pswp__item"></div>
+                    <div class="pswp__item"></div>
+                    <div class="pswp__item"></div>
+                </div>
+
+                <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+                <div class="pswp__ui pswp__ui--hidden">
+
+                    <div class="pswp__top-bar">
+
+                        <!--  Controls are self-explanatory. Order can be changed. -->
+
+                        <div class="pswp__counter"></div>
+
+                        <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                        <!--<button class="pswp__button pswp__button&#45;&#45;share" title="Share"></button>-->
+
+                        <!--<button class="pswp__button pswp__button&#45;&#45;fs" title="Toggle fullscreen"></button>-->
+
+                        <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                        <!-- Preloader demo https://codepen.io/dimsemenov/pen/yyBWoR -->
+                        <!-- element will get class pswp__preloader--active when preloader is running -->
+                        <div class="pswp__preloader">
+                            <div class="pswp__preloader__icn">
+                                <div class="pswp__preloader__cut">
+                                    <div class="pswp__preloader__donut"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                        <div class="pswp__share-tooltip"></div>
+                    </div>
+
+                    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+                    </button>
+
+                    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+                    </button>
+
+                    <div class="pswp__caption">
+                        <div class="pswp__caption__center"></div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <div class="page page_like">
+        <img src="" class="myResultImage">
+        <button class="likePageBtn like" data-func="like">点赞</button>
+        <button class="likePageBtn rank" data-func="rank">排行榜</button>
+    </div>
+
+    <div class="page page_rank">
+        <p>我是排行榜=  =</p>
+    </div>
+</div>
+
+<script src="js/jquery.min.js"></script>
+<script src="js/jquery-weui.min.js"></script>
+<script src="js/swiper.js"></script>
+<script src="js/fastclick.min.js"></script>
+<script src="js/hammer.min.js"></script>
+<script src="js/iscroll-zoom-min.js"></script>
+<script src="js/lrz.all.bundle.js"></script>
+<script src="js/PhotoClip.js"></script>
+<!--<script src="js/ImageEditor.js"></script>-->
+<script src="js/photoswipe.min.js"></script>
+<script src="js/photoswipe-ui-default.min.js"></script>
+
+<script>
+        var $page = $('.page');
+        var $page_crop = $('.page_crop');
+        var $page_crop_result = $('.page_crop_result');
+        var $inputImageFile = $('#inputImageFile');
+        var uploadedImageType = 'image/jpeg';
+        var $cropResultImage = $('#cropResultImage');
+        var cropImageUrl = '';
+        var imageSwiper = null;
+//        var $compositePictures = $('.compositePictures');
+        var compositePicturesURL = '';
+        var $myResultImage = $('.myResultImage');
+
+
+        var $cropOptionBtn = $('.cropOptionBtn');
+        var $photoFrameBtn = $('.photoFrameBtn');
+        var $likePageBtn = $('.likePageBtn');
+
+        var time1,time2,time3 = null;
+
+        var option = {
+            size: 300,
+            outputSize: 640,
+            adaptive: ['80%', '90%'],
+            file: '#inputImageFile',
+//            view: '#view',
+            ok: '#clipBtn',
+            Boolean: true,
+//            maxZoom: 1,
+//            img: 'img/mm.jpg',
+            loadStart: function() {
+                console.log('开始读取照片');
+            },
+            loadComplete: function() {
+                console.log('照片读取完成');
+            },
+            done: function(dataURL) {
+                cropImageUrl = dataURL;
+                $cropResultImage.attr("src",cropImageUrl);
+                changePage('page_crop_result');
+//                console.log(dataURL);
+            },
+            fail: function(msg) {
+                alert(msg);
+            }
+        };
+
+
+        function hideAllPage() {
+            $page.hide();
+        }
+        function changePage(page) {
+            hideAllPage();
+            $('.'+page).show();
+            if(page == 'page_crop_result'){
+                imageSwiper = $(".swiper-container").swiper({
+                    loop: true,
+                    autoplay: 0
+                });
+                $.toptip('左右滑动可切换相框', 'success');
+            }
+        }
+        function createPhotoFrame(callback) {
+            var data = [cropImageUrl,$('.swiper-wrapper .swiper-slide img').eq(imageSwiper.prop('swiper').activeIndex).attr('src')];
+            var c=document.createElement('canvas'),
+                ctx=c.getContext('2d'),
+                len=data.length;
+            c.width=$('#cropResultImage').width()*2;
+            c.height=$('#cropResultImage').height()*2;
+            ctx.rect(0,0,c.width,c.height);
+            ctx.fillStyle='#fff';
+            ctx.fill();
+            var img=new Image;
+            //img.crossOrigin = 'Anonymous'; //解决跨域
+            img.src=data[0];
+            img.onload=function(){
+                ctx.drawImage(img,0,0,$('#cropResultImage').width()*2,$('#cropResultImage').height()*2);
+//                console.log(c.toDataURL("image/jpeg",0.8));
+            };
+            function drawing(n){
+                if(n<len){
+                    var img=new Image;
+                    //img.crossOrigin = 'Anonymous'; //解决跨域
+                    img.src=data[n];
+                    img.onload=function(){
+                        ctx.drawImage(img,0,0,$('#cropResultImage').width()*2,$('#cropResultImage').height()*2);
+                        drawing(n+1);//递归
+                    }
+                }else{
+                    //保存生成作品图片
+                    var cvs = c.toDataURL("image/jpeg",0.9);
+//                                var $img = $('<img>');
+//                                $img.attr('src', cvs);
+//                                $('.page.page_crop_result').append($img);
+//                                $compositePictures.attr('src',cvs);
+                    compositePicturesURL = cvs;
+                    if (typeof callback === "function"){
+                        callback();
+                    }
+                }
+            }
+            drawing(0);
+        }
+
+
+        function openPhotoSwipe() {
+//            console.log(compositePicturesURL);
+            var pswpElement = document.querySelectorAll('.pswp')[0];
+            // build items array
+            var items = [
+                {
+                    src: compositePicturesURL,
+                    w: $('#cropResultImage').width()*2,
+                    h: $('#cropResultImage').height()*2
+                }
+            ];
+
+            // define options (if needed)
+            var options = {
+                // history & focus options are disabled on CodePen
+                history: false,
+                focus: false,
+
+                showAnimationDuration: 0,
+                hideAnimationDuration: 0
+
+            };
+
+            var gallery = new PhotoSwipe( pswpElement, PhotoSwipeUI_Default, items, options);
+            gallery.init();
+        }
+
+        $(function() {
+//            FastClick.attach(document.body);
+            $cropOptionBtn.on('click',function(){
+                switch($(this).data('func')){
+                    case 'imageUpload':
+                        $inputImageFile.trigger("click");
+                        break;
+                    case 'leftRotate':
+                        pc.rotate(pc.rotate()-90);
+                        break;
+                    case 'rightRotate':
+                        pc.rotate(pc.rotate()+90);
+                        break;
+                }
+            });
+            $photoFrameBtn.on('click',function(){
+                switch($(this).data('func')){
+                    case 'photoFramePreview':
+                        createPhotoFrame(openPhotoSwipe);
+                        break;
+                    case 'photoFrameConfirm':
+                        var modal = $.modal({
+                            title: "填写信息",
+                            text:  '<p class="weui-prompt-text">'+''+'</p>' +
+                            '<input type="text" class="weui-input weui-prompt-input" id="weui-prompt-surname" value="' + ''+ '" placeholder="请输入姓氏" />' +
+                            '<input type="text" class="weui-input weui-prompt-input" id="weui-prompt-nickname" value="' + ''+ '" placeholder="请输入昵称" />' +
+                            '<input type="number" class="weui-input weui-prompt-input" id="weui-prompt-tel" value="' + ''+ '" placeholder="请输入手机号码" />',
+                            buttons: [
+                                { text: "提交", onClick: function(){
+                                    var surname = $("#weui-prompt-surname").val().trim();
+                                    var nickname = $("#weui-prompt-nickname").val().trim();
+                                    var tel = $("#weui-prompt-tel").val().trim();
+                                    var weui_prompt_surname = $('#weui-prompt-surname');
+                                    var weui_prompt_nickname = $('#weui-prompt-nickname');
+                                    var weui_prompt_tel = $('#weui-prompt-tel');
+                                    
+                                    weui_prompt_surname.css('background-color','#fff');
+                                    weui_prompt_nickname.css('background-color','#fff');
+                                    weui_prompt_tel.css('background-color','#fff');
+
+                                    if (surname === "" || surname === null || surname.length < 0 || surname.length > 4) {
+                                        weui_prompt_surname.focus()[0].select();
+                                        weui_prompt_surname.css('background-color','#fba0a0');
+                                        weui_prompt_surname.attr('placeholder','姓氏长度必须少于4');
+                                        weui_prompt_surname.val('');
+                                        clearTimeout(time1);
+                                        time1 = setTimeout(function(){
+                                            weui_prompt_surname.attr('placeholder','请输入姓氏');
+                                            weui_prompt_surname.css('background-color','#fff');
+                                        },2000);
+                                        return false;
+                                    }
+                                    if (nickname === "" || nickname === null || surname.length < 0 || surname.length > 16) {
+                                        weui_prompt_nickname.focus()[0].select();
+                                        weui_prompt_nickname.css('background-color','#fba0a0');
+                                        weui_prompt_nickname.attr('placeholder','昵称长度必须少于16');
+                                        weui_prompt_nickname.val('');
+                                        clearTimeout(time2);
+                                        time2 = setTimeout(function(){
+                                            weui_prompt_nickname.attr('placeholder','请输入昵称');
+                                            weui_prompt_nickname.css('background-color','#fff');
+                                        },2000);
+                                        return false;
+                                    }
+                                    if (tel === "" || tel === null || tel.length != 11) {
+                                        weui_prompt_tel.focus()[0].select();
+                                        weui_prompt_tel.css('background-color','#fba0a0');
+                                        weui_prompt_tel.attr('placeholder','手机号码格式有误');
+                                        weui_prompt_tel.val('');
+                                        clearTimeout(time3);
+                                        time3 = setTimeout(function(){
+                                            weui_prompt_tel.attr('placeholder','请输入手机号码');
+                                            weui_prompt_tel.css('background-color','#fff');
+                                        },2000);
+                                        return false;
+                                    }
+                                    $.showLoading('正在提交');
+                                    $.closeModal();
+                                    setTimeout(function(){
+                                        $.hideLoading();
+                                        $.toast('提交成功');
+                                        createPhotoFrame(function(){
+                                            $myResultImage.attr('src',compositePicturesURL);
+                                            changePage('page_like');
+                                        });
+                                    },2000);
+                                }},
+                                { text: "取消", onClick: function(){$.closeModal();}, className: "default" },
+                            ],
+                            autoClose: false,
+                        });
+                        break;
+                }
+            });
+
+            $likePageBtn.on('click',function(){
+                switch($(this).data('func')){
+                    case 'like':
+                        $.alert('点赞成功');
+                        $('.likePageBtn.like').attr('disabled',true).unbind();
+                        break;
+                    case 'rank':
+                        changePage('page_rank');
+                        break;
+                }
+            });
+
+            var pc = new PhotoClip('#clipArea', option);
+            // 加载的图片必须要与本程序同源，否则无法截图
+            pc.load('img/mm.jpg');
+        });
+</script>
+</body>
+</html>
