@@ -1,4 +1,4 @@
-# 移动web 照片裁剪与合成的简单例子
+# 移动web 照片/图片裁剪与合成的简单例子
 ### Demo
 [http://demo.gfwboom.com/photoClipAndSynthesis](http://demo.gfwboom.com/photoClipAndSynthesis "http://demo.gfwboom.com/photoClipAndSynthesis")
 ### Gif
