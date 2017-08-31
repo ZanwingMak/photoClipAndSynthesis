@@ -2,5 +2,5 @@
 ### Demo
 [http://demo.gfwboom.com/photoClipAndSynthesis](http://demo.gfwboom.com/photoClipAndSynthesis "http://demo.gfwboom.com/photoClipAndSynthesis")
 ### Gif
-![](https://o7y8mvdbc.qnssl.com/tc/uploads/1708/310639115448.gif)
+![](https://github.com/maizhenying09/photoClipAndSynthesis/blob/master/GIF.gif)
 
